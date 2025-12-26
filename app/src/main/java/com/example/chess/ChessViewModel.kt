@@ -178,7 +178,18 @@ class ChessViewModel : ViewModel() {
                 }
 
                 ChessPiece.Løper -> {
-
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first + counter to position.second + counter
+                    }
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first + counter to position.second - counter
+                    }
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first - counter to position.second + counter
+                    }
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first - counter to position.second - counter
+                    }
                 }
 
                 ChessPiece.Tårn -> {
