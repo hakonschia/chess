@@ -1,12 +1,12 @@
 package com.example.chess
 
 enum class ChessPiece {
-    Bonde,
-    Konge,
-    Dronning,
-    Hest,
-    Løper,
-    Tårn,
+    Pawn,
+    King,
+    Queen,
+    Horse,
+    Bishop,
+    Rook,
 }
 
 data class ChessPieceButMore(

@@ -11,40 +11,40 @@ class ChessViewModel : ViewModel() {
     private val _pieces = MutableStateFlow(
         mapOf(
             // White
-            0 to 1 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = true, hasBeenMoved = false),
-            1 to 1 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = true, hasBeenMoved = false),
-            2 to 1 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = true, hasBeenMoved = false),
-            3 to 1 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = true, hasBeenMoved = false),
-            4 to 1 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = true, hasBeenMoved = false),
-            5 to 1 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = true, hasBeenMoved = false),
-            6 to 1 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = true, hasBeenMoved = false),
-            7 to 1 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = true, hasBeenMoved = false),
-            0 to 0 to ChessPieceButMore(piece = ChessPiece.Tårn, isWhite = true, hasBeenMoved = false),
-            1 to 0 to ChessPieceButMore(piece = ChessPiece.Hest, isWhite = true, hasBeenMoved = false),
-            2 to 0 to ChessPieceButMore(piece = ChessPiece.Løper, isWhite = true, hasBeenMoved = false),
-            3 to 0 to ChessPieceButMore(piece = ChessPiece.Dronning, isWhite = true, hasBeenMoved = false),
-            4 to 0 to ChessPieceButMore(piece = ChessPiece.Konge, isWhite = true, hasBeenMoved = false),
-            5 to 0 to ChessPieceButMore(piece = ChessPiece.Løper, isWhite = true, hasBeenMoved = false),
-            6 to 0 to ChessPieceButMore(piece = ChessPiece.Hest, isWhite = true, hasBeenMoved = false),
-            7 to 0 to ChessPieceButMore(piece = ChessPiece.Tårn, isWhite = true, hasBeenMoved = false),
+            0 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
+            1 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
+            2 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
+            3 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
+            4 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
+            5 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
+            6 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
+            7 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
+            0 to 0 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = true, hasBeenMoved = false),
+            1 to 0 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = true, hasBeenMoved = false),
+            2 to 0 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = true, hasBeenMoved = false),
+            3 to 0 to ChessPieceButMore(piece = ChessPiece.Queen, isWhite = true, hasBeenMoved = false),
+            4 to 0 to ChessPieceButMore(piece = ChessPiece.King, isWhite = true, hasBeenMoved = false),
+            5 to 0 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = true, hasBeenMoved = false),
+            6 to 0 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = true, hasBeenMoved = false),
+            7 to 0 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = true, hasBeenMoved = false),
 
             // Black
-            0 to 6 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = false, hasBeenMoved = false),
-            1 to 6 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = false, hasBeenMoved = false),
-            2 to 6 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = false, hasBeenMoved = false),
-            3 to 6 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = false, hasBeenMoved = false),
-            4 to 6 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = false, hasBeenMoved = false),
-            5 to 6 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = false, hasBeenMoved = false),
-            6 to 6 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = false, hasBeenMoved = false),
-            7 to 6 to ChessPieceButMore(piece = ChessPiece.Bonde, isWhite = false, hasBeenMoved = false),
-            0 to 7 to ChessPieceButMore(piece = ChessPiece.Tårn, isWhite = false, hasBeenMoved = false),
-            1 to 7 to ChessPieceButMore(piece = ChessPiece.Hest, isWhite = false, hasBeenMoved = false),
-            2 to 7 to ChessPieceButMore(piece = ChessPiece.Løper, isWhite = false, hasBeenMoved = false),
-            3 to 7 to ChessPieceButMore(piece = ChessPiece.Dronning, isWhite = false, hasBeenMoved = false),
-            4 to 7 to ChessPieceButMore(piece = ChessPiece.Konge, isWhite = false, hasBeenMoved = false),
-            5 to 7 to ChessPieceButMore(piece = ChessPiece.Løper, isWhite = false, hasBeenMoved = false),
-            6 to 7 to ChessPieceButMore(piece = ChessPiece.Hest, isWhite = false, hasBeenMoved = false),
-            7 to 7 to ChessPieceButMore(piece = ChessPiece.Tårn, isWhite = false, hasBeenMoved = false),
+            0 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
+            1 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
+            2 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
+            3 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
+            4 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
+            5 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
+            6 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
+            7 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
+            0 to 7 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = false, hasBeenMoved = false),
+            1 to 7 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = false, hasBeenMoved = false),
+            2 to 7 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = false, hasBeenMoved = false),
+            3 to 7 to ChessPieceButMore(piece = ChessPiece.Queen, isWhite = false, hasBeenMoved = false),
+            4 to 7 to ChessPieceButMore(piece = ChessPiece.King, isWhite = false, hasBeenMoved = false),
+            5 to 7 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = false, hasBeenMoved = false),
+            6 to 7 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = false, hasBeenMoved = false),
+            7 to 7 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = false, hasBeenMoved = false),
         )
     )
     val pieces = _pieces.asStateFlow()
@@ -80,10 +80,10 @@ class ChessViewModel : ViewModel() {
                     val lastMove = moves.lastOrNull()
 
                     when (piece.piece) {
-                        ChessPiece.Bonde -> {
+                        ChessPiece.Pawn -> {
                             if (
                                 lastMove != null &&
-                                currentPieces[lastMove.second]?.piece == ChessPiece.Bonde &&
+                                currentPieces[lastMove.second]?.piece == ChessPiece.Pawn &&
                                 to.first == lastMove.second.first &&
                                 abs(lastMove.second.second - lastMove.first.second) == 2
                             ) {
@@ -102,7 +102,7 @@ class ChessViewModel : ViewModel() {
                             }
                         }
 
-                        ChessPiece.Konge -> {
+                        ChessPiece.King -> {
                             // We are castling, need to manually move the tower
                             if (to.first - from.first == 2) {
                                 put(5 to from.second, remove(7 to from.second)!!)
@@ -111,10 +111,10 @@ class ChessViewModel : ViewModel() {
                             }
                         }
 
-                        ChessPiece.Dronning,
-                        ChessPiece.Hest,
-                        ChessPiece.Løper,
-                        ChessPiece.Tårn -> {
+                        ChessPiece.Queen,
+                        ChessPiece.Horse,
+                        ChessPiece.Bishop,
+                        ChessPiece.Rook -> {
                             // No special moves
                         }
                     }
@@ -195,7 +195,7 @@ private fun getValidPositionsForPiece(
 
     return buildList {
         when (piece.piece) {
-            ChessPiece.Bonde -> {
+            ChessPiece.Pawn -> {
                 if (piece.isWhite) {
                     if (isPositionEmpty(position.first to position.second + 1)) {
                         addIfPositionIsEmpty(position.first to position.second + 1)
@@ -242,7 +242,7 @@ private fun getValidPositionsForPiece(
                 }
             }
 
-            ChessPiece.Konge -> {
+            ChessPiece.King -> {
                 addIfPositionIsEmptyOrTakenByEnemy(position.first to position.second + 1)
                 addIfPositionIsEmptyOrTakenByEnemy(position.first to position.second - 1)
                 addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second)
@@ -255,8 +255,8 @@ private fun getValidPositionsForPiece(
                 // Castling moves
                 if (!piece.hasBeenMoved) {
                     if (piece.isWhite) {
-                        val rightTower = board[7 to 0]?.takeIf { !it.hasBeenMoved && it.piece == ChessPiece.Tårn }
-                        val leftTower = board[0 to 0]?.takeIf { !it.hasBeenMoved && it.piece == ChessPiece.Tårn }
+                        val rightTower = board[7 to 0]?.takeIf { !it.hasBeenMoved && it.piece == ChessPiece.Rook }
+                        val leftTower = board[0 to 0]?.takeIf { !it.hasBeenMoved && it.piece == ChessPiece.Rook }
 
                         if (
                             isPositionEmpty(5 to 0) &&
@@ -275,8 +275,8 @@ private fun getValidPositionsForPiece(
                             add(2 to 0)
                         }
                     } else {
-                        val rightTower = board[7 to 7]?.takeIf { !it.hasBeenMoved && it.piece == ChessPiece.Tårn }
-                        val leftTower = board[0 to 7]?.takeIf { !it.hasBeenMoved && it.piece == ChessPiece.Tårn }
+                        val rightTower = board[7 to 7]?.takeIf { !it.hasBeenMoved && it.piece == ChessPiece.Rook }
+                        val leftTower = board[0 to 7]?.takeIf { !it.hasBeenMoved && it.piece == ChessPiece.Rook }
 
                         if (
                             isPositionEmpty(5 to 7) &&
@@ -309,7 +309,7 @@ private fun getValidPositionsForPiece(
                 }
             }
 
-            ChessPiece.Dronning -> {
+            ChessPiece.Queen -> {
                 addWhilePositionIsEmptyOrTakenByEnemy { counter ->
                     position.first + counter to position.second + counter
                 }
@@ -337,7 +337,7 @@ private fun getValidPositionsForPiece(
                 }
             }
 
-            ChessPiece.Hest -> {
+            ChessPiece.Horse -> {
                 addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second + 2)
                 addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second - 2)
 
@@ -351,7 +351,7 @@ private fun getValidPositionsForPiece(
                 addIfPositionIsEmptyOrTakenByEnemy(position.first - 2 to position.second + 1)
             }
 
-            ChessPiece.Løper -> {
+            ChessPiece.Bishop -> {
                 addWhilePositionIsEmptyOrTakenByEnemy { counter ->
                     position.first + counter to position.second + counter
                 }
@@ -366,7 +366,7 @@ private fun getValidPositionsForPiece(
                 }
             }
 
-            ChessPiece.Tårn -> {
+            ChessPiece.Rook -> {
                 addWhilePositionIsEmptyOrTakenByEnemy { counter ->
                     position.first to position.second + counter
                 }
@@ -389,12 +389,12 @@ private fun isMate(board: Map<Pair<Int, Int>, ChessPieceButMore>, white: Boolean
     // those positions
     val allMovesForOtherPlayer = board
         .filter { it.value.isWhite != white }
-        .filter { it.value.piece != ChessPiece.Konge }
+        .filter { it.value.piece != ChessPiece.King }
         .flatMap { piece ->
             getValidPositionsForPiece(board, piece.key, null)
         }
 
-    val positionOfKing = board.filter { it.value.piece == ChessPiece.Konge && it.value.isWhite == white }.keys.single()
+    val positionOfKing = board.filter { it.value.piece == ChessPiece.King && it.value.isWhite == white }.keys.single()
 
     return allMovesForOtherPlayer.contains(positionOfKing)
 }
