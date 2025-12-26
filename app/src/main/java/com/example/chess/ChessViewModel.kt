@@ -20,7 +20,7 @@ class ChessViewModel : ViewModel() {
             0 to 0 to ChessPieceButMore(ChessPiece.Tårn, true),
             1 to 0 to ChessPieceButMore(ChessPiece.Hest, true),
             2 to 0 to ChessPieceButMore(ChessPiece.Løper, true),
-            3 to 4 to ChessPieceButMore(ChessPiece.Dronning, true),
+            3 to 0 to ChessPieceButMore(ChessPiece.Dronning, true),
             4 to 0 to ChessPieceButMore(ChessPiece.Konge, true),
             5 to 0 to ChessPieceButMore(ChessPiece.Løper, true),
             6 to 0 to ChessPieceButMore(ChessPiece.Hest, true),
@@ -66,7 +66,9 @@ class ChessViewModel : ViewModel() {
         val piece = _pieces.value[position] ?: return emptyList()
 
         fun isPositionTakenByEnemy(position: Pair<Int, Int>): Boolean {
-            return pieces.value[position]?.isWhite != piece.isWhite
+            val pieceAtPosition = _pieces.value[position] ?: return false
+
+            return pieceAtPosition.isWhite != piece.isWhite
         }
 
         fun MutableList<Pair<Int, Int>>.addIfPositionIsEmpty(position: Pair<Int, Int>) {
