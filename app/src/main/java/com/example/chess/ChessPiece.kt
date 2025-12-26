@@ -11,5 +11,6 @@ enum class ChessPiece {
 
 data class ChessPieceButMore(
     val piece: ChessPiece,
-    val isWhite: Boolean
+    val isWhite: Boolean,
+    val hasBeenMoved: Boolean
 )
