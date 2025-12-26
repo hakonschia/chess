@@ -81,6 +81,7 @@ class ChessViewModel : ViewModel() {
                         lastMove != null &&
                         currentPieces[lastMove.second]?.piece == ChessPiece.Bonde &&
                         piece.piece == ChessPiece.Bonde &&
+                        to.first == lastMove.second.first &&
                         abs(lastMove.second.second - lastMove.first.second) == 2
                     ) {
                         remove(lastMove.second)
@@ -164,7 +165,11 @@ private fun getValidPositionsForPiece(
                     addIfPositionIsTakenByEnemy(position.first - 1 to position.second + 1)
 
                     // en passant
-                    if (previousMove != null && previousMove.first.second - previousMove.second.second == 2) {
+                    if (
+                        previousMove != null &&
+                        previousMove.first.second - previousMove.second.second == 2 &&
+                        previousMove.second.second == position.second
+                    ) {
                         add(previousMove.second.first to previousMove.second.second + 1)
                     }
                 } else {
@@ -182,7 +187,11 @@ private fun getValidPositionsForPiece(
                     addIfPositionIsTakenByEnemy(position.first + 1 to position.second - 1)
 
                     // en passant
-                    if (previousMove != null && previousMove.second.second - previousMove.first.second == 2) {
+                    if (
+                        previousMove != null &&
+                        previousMove.second.second - previousMove.first.second == 2 &&
+                        previousMove.second.second == position.second
+                    ) {
                         add(previousMove.second.first to previousMove.second.second - 1)
                     }
                 }
