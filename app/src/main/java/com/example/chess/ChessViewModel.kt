@@ -54,6 +54,9 @@ class ChessViewModel : ViewModel() {
 
     private val moves = mutableListOf<Pair<Pair<Int, Int>, Pair<Int, Int>>>()
 
+    private val _showPawnConversionDialog = MutableStateFlow<Pair<Int, Int>?>(null)
+    val showPawnConversionDialog = _showPawnConversionDialog.asStateFlow()
+
     fun selectPiece(position: Pair<Int, Int>) {
         if (_selectedPiece.value?.first == position) {
             _selectedPiece.value = null
@@ -76,23 +79,43 @@ class ChessViewModel : ViewModel() {
 
                     val lastMove = moves.lastOrNull()
 
-                    // holy hell
-                    if (
-                        lastMove != null &&
-                        currentPieces[lastMove.second]?.piece == ChessPiece.Bonde &&
-                        piece.piece == ChessPiece.Bonde &&
-                        to.first == lastMove.second.first &&
-                        abs(lastMove.second.second - lastMove.first.second) == 2
-                    ) {
-                        remove(lastMove.second)
-                    }
+                    when (piece.piece) {
+                        ChessPiece.Bonde -> {
+                            // holy hell
+                            if (
+                                lastMove != null &&
+                                currentPieces[lastMove.second]?.piece == ChessPiece.Bonde &&
+                                to.first == lastMove.second.first &&
+                                abs(lastMove.second.second - lastMove.first.second) == 2
+                            ) {
+                                remove(lastMove.second)
+                            } else {
+                                if (piece.isWhite) {
+                                    if (to.second == 7) {
+                                        _showPawnConversionDialog.value = to
+                                    }
+                                } else {
+                                    if (to.second == 0) {
+                                        _showPawnConversionDialog.value = to
+                                    }
+                                }
+                            }
+                        }
 
-                    if (piece.piece == ChessPiece.Konge) {
-                        // We are castling, need to manually move the tower
-                        if (to.first - from.first == 2) {
-                            put(5 to from.second, remove(7 to from.second)!!)
-                        } else if (from.first - to.first == 2) {
-                            put(3 to from.second, remove(0 to from.second)!!)
+                        ChessPiece.Konge -> {
+                            // We are castling, need to manually move the tower
+                            if (to.first - from.first == 2) {
+                                put(5 to from.second, remove(7 to from.second)!!)
+                            } else if (from.first - to.first == 2) {
+                                put(3 to from.second, remove(0 to from.second)!!)
+                            }
+                        }
+
+                        ChessPiece.Dronning,
+                        ChessPiece.Hest,
+                        ChessPiece.Løper,
+                        ChessPiece.Tårn -> {
+                            // No special moves
                         }
                     }
 
@@ -100,6 +123,19 @@ class ChessViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    fun onPawnDialogConfirm(piece: ChessPiece) {
+        showPawnConversionDialog.value?.let { pawnPosition ->
+            _pieces.update { board ->
+                board.toMutableMap().apply {
+                    val currentPiece = board[pawnPosition]!!
+
+                    put(pawnPosition, ChessPieceButMore(piece = piece, isWhite = currentPiece.isWhite, hasBeenMoved = true))
+                }
+            }
+        }
+        _showPawnConversionDialog.value = null
     }
 }
 
