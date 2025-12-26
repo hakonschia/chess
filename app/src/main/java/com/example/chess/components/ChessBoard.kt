@@ -21,6 +21,7 @@ fun ChessBoard(
     pieces: Map<Pair<Int, Int>, ChessPieceButMore>,
     selectedPiece: Pair<Pair<Int, Int>, List<Pair<Int, Int>>>?,
     onSelectPiece: (Pair<Int, Int>) -> Unit,
+    onMovePiece: (Pair<Int, Int>, Pair<Int, Int>) -> Unit,
     modifier: Modifier = Modifier
 ) {
     BoxWithConstraints(
@@ -37,18 +38,23 @@ fun ChessBoard(
                 Column {
                     for (j in 7 downTo 0) {
                         val piecePosition = i to j
+                        val canMoveToPosition = selectedPiece?.second?.contains(piecePosition) == true
 
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
                                 .clickable {
-                                    onSelectPiece(i to j)
+                                    if (canMoveToPosition) {
+                                        onMovePiece(selectedPiece.first, piecePosition)
+                                    } else {
+                                        onSelectPiece(piecePosition)
+                                    }
                                 }
                                 .size(boxSize)
                                 .background(
                                     if (selectedPiece?.first == piecePosition) {
                                         Color.Red.copy(alpha = 0.25f)
-                                    } else if (selectedPiece?.second?.contains(piecePosition) == true) {
+                                    } else if (canMoveToPosition) {
                                         Color.Green.copy(alpha = 0.25f)
                                     } else {
                                         if (i % 2 == 0) {

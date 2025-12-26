@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity() {
                         pieces = viewModel.pieces.collectAsState().value,
                         selectedPiece = viewModel.selectedPiece.collectAsState().value,
                         onSelectPiece = viewModel::selectPiece,
+                        onMovePiece = viewModel::movePiece,
                         modifier = Modifier
                             .background(Color.Black)
                             .padding(innerPadding)

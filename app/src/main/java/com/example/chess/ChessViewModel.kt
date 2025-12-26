@@ -3,6 +3,7 @@ package com.example.chess
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class ChessViewModel : ViewModel() {
 
@@ -55,6 +56,18 @@ class ChessViewModel : ViewModel() {
             _selectedPiece.value = null
         } else {
             _selectedPiece.value = position to getValidPositionsForPiece(position)
+        }
+    }
+
+    fun movePiece(from: Pair<Int, Int>, to: Pair<Int, Int>) {
+        _selectedPiece.value = null
+
+        _pieces.update { currentPieces ->
+            currentPieces.toMutableMap().apply {
+                remove(from)?.let { piece ->
+                    put(to, piece)
+                }
+            }
         }
     }
 
