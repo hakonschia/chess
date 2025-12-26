@@ -140,23 +140,14 @@ class ChessViewModel : ViewModel() {
                 }
 
                 ChessPiece.Konge -> {
-                    addIfPositionIsTakenByEnemy(position.first to position.second + 1)
-                    addIfPositionIsTakenByEnemy(position.first to position.second - 1)
-                    addIfPositionIsTakenByEnemy(position.first + 1 to position.second)
-                    addIfPositionIsTakenByEnemy(position.first + 1 to position.second + 1)
-                    addIfPositionIsTakenByEnemy(position.first + 1 to position.second - 1)
-                    addIfPositionIsTakenByEnemy(position.first - 1 to position.second)
-                    addIfPositionIsTakenByEnemy(position.first - 1 to position.second + 1)
-                    addIfPositionIsTakenByEnemy(position.first - 1 to position.second - 1)
-
-                    addIfPositionIsEmpty(position.first to position.second + 1)
-                    addIfPositionIsEmpty(position.first to position.second - 1)
-                    addIfPositionIsEmpty(position.first + 1 to position.second)
-                    addIfPositionIsEmpty(position.first + 1 to position.second + 1)
-                    addIfPositionIsEmpty(position.first + 1 to position.second - 1)
-                    addIfPositionIsEmpty(position.first - 1 to position.second)
-                    addIfPositionIsEmpty(position.first - 1 to position.second + 1)
-                    addIfPositionIsEmpty(position.first - 1 to position.second - 1)
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first to position.second + 1)
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first to position.second - 1)
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second)
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second + 1)
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second - 1)
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second)
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second + 1)
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second - 1)
                 }
 
                 ChessPiece.Dronning -> {
