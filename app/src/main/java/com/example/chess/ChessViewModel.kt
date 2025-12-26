@@ -160,7 +160,31 @@ class ChessViewModel : ViewModel() {
                 }
 
                 ChessPiece.Dronning -> {
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first + counter to position.second + counter
+                    }
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first + counter to position.second - counter
+                    }
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first - counter to position.second + counter
+                    }
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first - counter to position.second - counter
+                    }
 
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first to position.second + counter
+                    }
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first to position.second - counter
+                    }
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first + counter to position.second
+                    }
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first - counter to position.second
+                    }
                 }
 
                 ChessPiece.Hest -> {
