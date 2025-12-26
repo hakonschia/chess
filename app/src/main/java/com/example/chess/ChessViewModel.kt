@@ -81,13 +81,13 @@ class ChessViewModel : ViewModel() {
 
                     when (piece.piece) {
                         ChessPiece.Bonde -> {
-                            // holy hell
                             if (
                                 lastMove != null &&
                                 currentPieces[lastMove.second]?.piece == ChessPiece.Bonde &&
                                 to.first == lastMove.second.first &&
                                 abs(lastMove.second.second - lastMove.first.second) == 2
                             ) {
+                                // holy hell
                                 remove(lastMove.second)
                             } else {
                                 if (piece.isWhite) {
