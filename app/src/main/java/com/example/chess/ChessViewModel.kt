@@ -15,7 +15,7 @@ class ChessViewModel : ViewModel() {
             3 to 1 to ChessPieceButMore(ChessPiece.Bonde, true),
             4 to 1 to ChessPieceButMore(ChessPiece.Bonde, true),
             5 to 1 to ChessPieceButMore(ChessPiece.Bonde, true),
-            6 to 4 to ChessPieceButMore(ChessPiece.Bonde, true),
+            6 to 1 to ChessPieceButMore(ChessPiece.Bonde, true),
             7 to 1 to ChessPieceButMore(ChessPiece.Bonde, true),
             0 to 0 to ChessPieceButMore(ChessPiece.Tårn, true),
             1 to 0 to ChessPieceButMore(ChessPiece.Hest, true),
@@ -79,6 +79,11 @@ class ChessViewModel : ViewModel() {
             }
         }
 
+        fun MutableList<Pair<Int, Int>>.addIfPositionIsEmptyOrTakenByEnemy(position: Pair<Int, Int>) {
+            addIfPositionIsEmpty(position)
+            addIfPositionIsTakenByEnemy(position)
+        }
+
         return buildList {
             when (piece.piece) {
                 ChessPiece.Bonde -> {
@@ -137,7 +142,17 @@ class ChessViewModel : ViewModel() {
                 }
 
                 ChessPiece.Hest -> {
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second + 2)
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second - 2)
 
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second + 2)
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second - 2)
+
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 2 to position.second - 1)
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 2 to position.second + 1)
+
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 2 to position.second - 1)
+                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 2 to position.second + 1)
                 }
 
                 ChessPiece.Løper -> {
