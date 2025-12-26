@@ -58,7 +58,11 @@ class ChessViewModel : ViewModel() {
         if (_selectedPiece.value?.first == position) {
             _selectedPiece.value = null
         } else {
-            _selectedPiece.value = position to getValidPositionsForPiece(position)
+            _selectedPiece.value = position to getValidPositionsForPiece(
+                board = pieces.value,
+                position = position,
+                previousMove = moves.lastOrNull()
+            )
         }
     }
 
@@ -87,183 +91,212 @@ class ChessViewModel : ViewModel() {
             }
         }
     }
+}
 
-    private fun isPositionEmpty(position: Pair<Int, Int>): Boolean {
-        return _pieces.value[position] == null
+private fun getValidPositionsForPiece(
+    board: Map<Pair<Int, Int>, ChessPieceButMore>,
+    position: Pair<Int, Int>,
+    previousMove: Pair<Pair<Int, Int>, Pair<Int, Int>>?
+): List<Pair<Int, Int>> {
+    val piece = board[position] ?: return emptyList()
+
+    fun isPositionEmpty(position: Pair<Int, Int>): Boolean {
+        return !board.containsKey(position)
     }
 
-    private fun getValidPositionsForPiece(position: Pair<Int, Int>): List<Pair<Int, Int>> {
-        val piece = _pieces.value[position] ?: return emptyList()
+    fun isPositionTakenByEnemy(position: Pair<Int, Int>): Boolean {
+        val pieceAtPosition = board[position] ?: return false
 
-        fun isPositionTakenByEnemy(position: Pair<Int, Int>): Boolean {
-            val pieceAtPosition = _pieces.value[position] ?: return false
+        return pieceAtPosition.isWhite != piece.isWhite
+    }
 
-            return pieceAtPosition.isWhite != piece.isWhite
+    fun MutableList<Pair<Int, Int>>.addIfPositionIsEmpty(position: Pair<Int, Int>) {
+        if (isPositionEmpty(position)) {
+            add(position)
         }
+    }
 
-        fun MutableList<Pair<Int, Int>>.addIfPositionIsEmpty(position: Pair<Int, Int>) {
-            if (isPositionEmpty(position)) {
-                add(position)
+    fun MutableList<Pair<Int, Int>>.addIfPositionIsTakenByEnemy(position: Pair<Int, Int>) {
+        if (isPositionTakenByEnemy(position)) {
+            add(position)
+        }
+    }
+
+    fun MutableList<Pair<Int, Int>>.addIfPositionIsEmptyOrTakenByEnemy(position: Pair<Int, Int>) {
+        addIfPositionIsEmpty(position)
+        addIfPositionIsTakenByEnemy(position)
+    }
+
+    fun MutableList<Pair<Int, Int>>.addWhilePositionIsEmptyOrTakenByEnemy(positionLambda: (Int) -> Pair<Int, Int>) {
+        for (i in 0 until 8) {
+            val newPosition = positionLambda(i)
+
+            if (position == newPosition) {
+                continue
+            }
+
+            if (isPositionEmpty(newPosition)) {
+                add(newPosition)
+            } else if (isPositionTakenByEnemy(newPosition)) {
+                add(newPosition)
+                return
+            } else {
+                // Taken by friendly piece
+                return
             }
         }
+    }
 
-        fun MutableList<Pair<Int, Int>>.addIfPositionIsTakenByEnemy(position: Pair<Int, Int>) {
-            if (isPositionTakenByEnemy(position)) {
-                add(position)
-            }
-        }
+    return buildList {
+        when (piece.piece) {
+            ChessPiece.Bonde -> {
+                if (piece.isWhite) {
+                    if (isPositionEmpty(position.first to position.second + 1)) {
+                        addIfPositionIsEmpty(position.first to position.second + 1)
 
-        fun MutableList<Pair<Int, Int>>.addIfPositionIsEmptyOrTakenByEnemy(position: Pair<Int, Int>) {
-            addIfPositionIsEmpty(position)
-            addIfPositionIsTakenByEnemy(position)
-        }
+                        if (position.second == 1) {
+                            addIfPositionIsEmpty(position.first to position.second + 2)
+                        }
+                    }
 
-        fun MutableList<Pair<Int, Int>>.addWhilePositionIsEmptyOrTakenByEnemy(positionLambda: (Int) -> Pair<Int, Int>) {
-            for (i in 0 until 8) {
-                val newPosition = positionLambda(i)
+                    // Piece at diagonal can be taken by the pawn
+                    addIfPositionIsTakenByEnemy(position.first + 1 to position.second + 1)
+                    addIfPositionIsTakenByEnemy(position.first - 1 to position.second + 1)
 
-                if (position == newPosition) {
-                    continue
-                }
-
-                if (isPositionEmpty(newPosition)) {
-                    add(newPosition)
-                } else if (isPositionTakenByEnemy(newPosition)) {
-                    add(newPosition)
-                    return
+                    // en passant
+                    if (previousMove != null && previousMove.first.second - previousMove.second.second == 2) {
+                        add(previousMove.second.first to previousMove.second.second + 1)
+                    }
                 } else {
-                    // Taken by friendly piece
-                    return
+                    if (isPositionEmpty(position.first to position.second - 1)) {
+                        // Pawn can go forward one if it is empty
+                        addIfPositionIsEmpty(position.first to position.second - 1)
+
+                        if (position.second == 6) {
+                            addIfPositionIsEmpty(position.first to position.second - 2)
+                        }
+                    }
+
+                    // Piece at diagonal can be taken by the pawn
+                    addIfPositionIsTakenByEnemy(position.first - 1 to position.second - 1)
+                    addIfPositionIsTakenByEnemy(position.first + 1 to position.second - 1)
+
+                    // en passant
+                    if (previousMove != null && previousMove.second.second - previousMove.first.second == 2) {
+                        add(previousMove.second.first to previousMove.second.second - 1)
+                    }
                 }
             }
-        }
 
-        return buildList {
-            when (piece.piece) {
-                ChessPiece.Bonde -> {
-                    val previousMove = moves.lastOrNull()
+            ChessPiece.Konge -> {
+                addIfPositionIsEmptyOrTakenByEnemy(position.first to position.second + 1)
+                addIfPositionIsEmptyOrTakenByEnemy(position.first to position.second - 1)
+                addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second)
+                addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second + 1)
+                addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second - 1)
+                addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second)
+                addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second + 1)
+                addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second - 1)
 
-                    if (piece.isWhite) {
-                        if (isPositionEmpty(position.first to position.second + 1)) {
-                            addIfPositionIsEmpty(position.first to position.second + 1)
-
-                            if (position.second == 1) {
-                                addIfPositionIsEmpty(position.first to position.second + 2)
-                            }
-                        }
-
-                        // Piece at diagonal can be taken by the pawn
-                        addIfPositionIsTakenByEnemy(position.first + 1 to position.second + 1)
-                        addIfPositionIsTakenByEnemy(position.first - 1 to position.second + 1)
-
-                        // en passant
-                        if (previousMove != null && previousMove.first.second - previousMove.second.second == 2) {
-                            add(previousMove.second.first to previousMove.second.second + 1)
-                        }
-                    } else {
-                        if (isPositionEmpty(position.first to position.second - 1)) {
-                            // Pawn can go forward one if it is empty
-                            addIfPositionIsEmpty(position.first to position.second - 1)
-
-                            if (position.second == 6) {
-                                addIfPositionIsEmpty(position.first to position.second - 2)
-                            }
-                        }
-
-                        // Piece at diagonal can be taken by the pawn
-                        addIfPositionIsTakenByEnemy(position.first - 1 to position.second - 1)
-                        addIfPositionIsTakenByEnemy(position.first + 1 to position.second - 1)
-
-                        // en passant
-                        if (previousMove != null && previousMove.second.second - previousMove.first.second == 2) {
-                            add(previousMove.second.first to previousMove.second.second - 1)
+                // The king isn't allowed to put itself in a mate, if one of the positions would return in a mate
+                // then it needs to be removed
+                removeAll { move ->
+                    val boardAfterMove = board.toMutableMap().apply {
+                        remove(position)?.let { piece ->
+                            put(move, piece)
                         }
                     }
+
+                    isMate(board = boardAfterMove, white = piece.isWhite)
+                }
+            }
+
+            ChessPiece.Dronning -> {
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first + counter to position.second + counter
+                }
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first + counter to position.second - counter
+                }
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first - counter to position.second + counter
+                }
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first - counter to position.second - counter
                 }
 
-                ChessPiece.Konge -> {
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first to position.second + 1)
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first to position.second - 1)
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second)
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second + 1)
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second - 1)
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second)
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second + 1)
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second - 1)
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first to position.second + counter
                 }
-
-                ChessPiece.Dronning -> {
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first + counter to position.second + counter
-                    }
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first + counter to position.second - counter
-                    }
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first - counter to position.second + counter
-                    }
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first - counter to position.second - counter
-                    }
-
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first to position.second + counter
-                    }
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first to position.second - counter
-                    }
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first + counter to position.second
-                    }
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first - counter to position.second
-                    }
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first to position.second - counter
                 }
-
-                ChessPiece.Hest -> {
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second + 2)
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second - 2)
-
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second + 2)
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second - 2)
-
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 2 to position.second - 1)
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first + 2 to position.second + 1)
-
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 2 to position.second - 1)
-                    addIfPositionIsEmptyOrTakenByEnemy(position.first - 2 to position.second + 1)
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first + counter to position.second
                 }
-
-                ChessPiece.Løper -> {
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first + counter to position.second + counter
-                    }
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first + counter to position.second - counter
-                    }
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first - counter to position.second + counter
-                    }
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first - counter to position.second - counter
-                    }
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first - counter to position.second
                 }
+            }
 
-                ChessPiece.Tårn -> {
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first to position.second + counter
-                    }
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first to position.second - counter
-                    }
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first + counter to position.second
-                    }
-                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
-                        position.first - counter to position.second
-                    }
+            ChessPiece.Hest -> {
+                addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second + 2)
+                addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second - 2)
+
+                addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second + 2)
+                addIfPositionIsEmptyOrTakenByEnemy(position.first - 1 to position.second - 2)
+
+                addIfPositionIsEmptyOrTakenByEnemy(position.first + 2 to position.second - 1)
+                addIfPositionIsEmptyOrTakenByEnemy(position.first + 2 to position.second + 1)
+
+                addIfPositionIsEmptyOrTakenByEnemy(position.first - 2 to position.second - 1)
+                addIfPositionIsEmptyOrTakenByEnemy(position.first - 2 to position.second + 1)
+            }
+
+            ChessPiece.Løper -> {
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first + counter to position.second + counter
+                }
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first + counter to position.second - counter
+                }
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first - counter to position.second + counter
+                }
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first - counter to position.second - counter
+                }
+            }
+
+            ChessPiece.Tårn -> {
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first to position.second + counter
+                }
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first to position.second - counter
+                }
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first + counter to position.second
+                }
+                addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                    position.first - counter to position.second
                 }
             }
         }
     }
+}
+
+private fun isMate(board: Map<Pair<Int, Int>, ChessPieceButMore>, white: Boolean): Boolean {
+    // To check if white is in a mate we just get all the valid positions for black and check if the king is in one of
+    // those positions
+    val allMovesForOtherPlayer = board
+        .filter { it.value.isWhite != white }
+        .filter { it.value.piece != ChessPiece.Konge }
+        .flatMap { piece ->
+            getValidPositionsForPiece(board, piece.key, null)
+        }
+
+    val positionOfKing = board.filter { it.value.piece == ChessPiece.Konge && it.value.isWhite == white }.keys.single()
+
+    return allMovesForOtherPlayer.contains(positionOfKing)
 }
