@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chess.components.ChessBoard
 import com.example.chess.ui.theme.ChessTheme
 
@@ -36,7 +37,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChessTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val viewModel = remember { ChessViewModel() }
+                    val viewModel = viewModel<ChessViewModel>()
                     val showPawnDialog by viewModel.showPawnConversionDialog.collectAsStateWithLifecycle()
 
                     ChessBoard(
