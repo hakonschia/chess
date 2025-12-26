@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlin.math.abs
 
 class ChessViewModel : ViewModel() {
 
@@ -51,6 +52,8 @@ class ChessViewModel : ViewModel() {
     private val _selectedPiece = MutableStateFlow<Pair<Pair<Int, Int>, List<Pair<Int, Int>>>?>(null)
     val selectedPiece = _selectedPiece.asStateFlow()
 
+    private val moves = mutableListOf<Pair<Pair<Int, Int>, Pair<Int, Int>>>()
+
     fun selectPiece(position: Pair<Int, Int>) {
         if (_selectedPiece.value?.first == position) {
             _selectedPiece.value = null
@@ -66,6 +69,20 @@ class ChessViewModel : ViewModel() {
             currentPieces.toMutableMap().apply {
                 remove(from)?.let { piece ->
                     put(to, piece)
+
+                    val lastMove = moves.lastOrNull()
+
+                    // holy hell
+                    if (
+                        lastMove != null &&
+                        currentPieces[lastMove.second]?.piece == ChessPiece.Bonde &&
+                        piece.piece == ChessPiece.Bonde &&
+                        abs(lastMove.second.second - lastMove.first.second) == 2
+                    ) {
+                        remove(lastMove.second)
+                    }
+
+                    moves.add(from to to)
                 }
             }
         }
@@ -124,7 +141,7 @@ class ChessViewModel : ViewModel() {
         return buildList {
             when (piece.piece) {
                 ChessPiece.Bonde -> {
-                    // TODO en passant
+                    val previousMove = moves.lastOrNull()
 
                     if (piece.isWhite) {
                         if (isPositionEmpty(position.first to position.second + 1)) {
@@ -138,6 +155,11 @@ class ChessViewModel : ViewModel() {
                         // Piece at diagonal can be taken by the pawn
                         addIfPositionIsTakenByEnemy(position.first + 1 to position.second + 1)
                         addIfPositionIsTakenByEnemy(position.first - 1 to position.second + 1)
+
+                        // en passant
+                        if (previousMove != null && previousMove.first.second - previousMove.second.second == 2) {
+                            add(previousMove.second.first to previousMove.second.second + 1)
+                        }
                     } else {
                         if (isPositionEmpty(position.first to position.second - 1)) {
                             // Pawn can go forward one if it is empty
@@ -151,6 +173,11 @@ class ChessViewModel : ViewModel() {
                         // Piece at diagonal can be taken by the pawn
                         addIfPositionIsTakenByEnemy(position.first - 1 to position.second - 1)
                         addIfPositionIsTakenByEnemy(position.first + 1 to position.second - 1)
+
+                        // en passant
+                        if (previousMove != null && previousMove.second.second - previousMove.first.second == 2) {
+                            add(previousMove.second.first to previousMove.second.second - 1)
+                        }
                     }
                 }
 
