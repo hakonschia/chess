@@ -65,6 +65,10 @@ class ChessViewModel : ViewModel() {
     private fun getValidPositionsForPiece(position: Pair<Int, Int>): List<Pair<Int, Int>> {
         val piece = _pieces.value[position] ?: return emptyList()
 
+        fun isPositionTakenByEnemy(position: Pair<Int, Int>): Boolean {
+            return pieces.value[position]?.isWhite != piece.isWhite
+        }
+
         fun MutableList<Pair<Int, Int>>.addIfPositionIsEmpty(position: Pair<Int, Int>) {
             if (isPositionEmpty(position)) {
                 add(position)
@@ -72,9 +76,7 @@ class ChessViewModel : ViewModel() {
         }
 
         fun MutableList<Pair<Int, Int>>.addIfPositionIsTakenByEnemy(position: Pair<Int, Int>) {
-            val pieceAtPosition = pieces.value[position] ?: return
-
-            if (!isPositionEmpty(position) && pieceAtPosition.isWhite != piece.isWhite) {
+            if (isPositionTakenByEnemy(position)) {
                 add(position)
             }
         }
@@ -82,6 +84,26 @@ class ChessViewModel : ViewModel() {
         fun MutableList<Pair<Int, Int>>.addIfPositionIsEmptyOrTakenByEnemy(position: Pair<Int, Int>) {
             addIfPositionIsEmpty(position)
             addIfPositionIsTakenByEnemy(position)
+        }
+
+        fun MutableList<Pair<Int, Int>>.addWhilePositionIsEmptyOrTakenByEnemy(positionLambda: (Int) -> Pair<Int, Int>) {
+            for (i in 0 until 8) {
+                val newPosition = positionLambda(i)
+
+                if (position == newPosition) {
+                    continue
+                }
+
+                if (isPositionEmpty(newPosition)) {
+                    add(newPosition)
+                } else if (isPositionTakenByEnemy(newPosition)) {
+                    add(newPosition)
+                    return
+                } else {
+                    // Taken by friendly piece
+                    return
+                }
+            }
         }
 
         return buildList {
@@ -160,7 +182,18 @@ class ChessViewModel : ViewModel() {
                 }
 
                 ChessPiece.Tårn -> {
-
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first to position.second + counter
+                    }
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first to position.second - counter
+                    }
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first + counter to position.second
+                    }
+                    addWhilePositionIsEmptyOrTakenByEnemy { counter ->
+                        position.first - counter to position.second
+                    }
                 }
             }
         }
