@@ -8,43 +8,45 @@ import kotlin.math.abs
 
 class ChessViewModel : ViewModel() {
 
+    private var idCounter = 0
+
     private val _pieces = MutableStateFlow(
         mapOf(
             // White
-            0 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
-            1 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
-            2 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
-            3 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
-            4 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
-            5 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
-            6 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
-            7 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false),
-            0 to 0 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = true, hasBeenMoved = false),
-            1 to 0 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = true, hasBeenMoved = false),
-            2 to 0 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = true, hasBeenMoved = false),
-            3 to 0 to ChessPieceButMore(piece = ChessPiece.Queen, isWhite = true, hasBeenMoved = false),
-            4 to 0 to ChessPieceButMore(piece = ChessPiece.King, isWhite = true, hasBeenMoved = false),
-            5 to 0 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = true, hasBeenMoved = false),
-            6 to 0 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = true, hasBeenMoved = false),
-            7 to 0 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = true, hasBeenMoved = false),
+            0 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            1 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            2 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            3 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            4 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            5 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            6 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            7 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            0 to 0 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            1 to 0 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            2 to 0 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            3 to 0 to ChessPieceButMore(piece = ChessPiece.Queen, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            4 to 0 to ChessPieceButMore(piece = ChessPiece.King, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            5 to 0 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            6 to 0 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            7 to 0 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = true, hasBeenMoved = false, id = idCounter++),
 
             // Black
-            0 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
-            1 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
-            2 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
-            3 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
-            4 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
-            5 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
-            6 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
-            7 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false),
-            0 to 7 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = false, hasBeenMoved = false),
-            1 to 7 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = false, hasBeenMoved = false),
-            2 to 7 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = false, hasBeenMoved = false),
-            3 to 7 to ChessPieceButMore(piece = ChessPiece.Queen, isWhite = false, hasBeenMoved = false),
-            4 to 7 to ChessPieceButMore(piece = ChessPiece.King, isWhite = false, hasBeenMoved = false),
-            5 to 7 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = false, hasBeenMoved = false),
-            6 to 7 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = false, hasBeenMoved = false),
-            7 to 7 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = false, hasBeenMoved = false),
+            0 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            1 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            2 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            3 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            4 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            5 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            6 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            7 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            0 to 7 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            1 to 7 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            2 to 7 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            3 to 7 to ChessPieceButMore(piece = ChessPiece.Queen, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            4 to 7 to ChessPieceButMore(piece = ChessPiece.King, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            5 to 7 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            6 to 7 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            7 to 7 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = false, hasBeenMoved = false, id = idCounter++),
         )
     )
     val pieces = _pieces.asStateFlow()
@@ -131,7 +133,15 @@ class ChessViewModel : ViewModel() {
                 board.toMutableMap().apply {
                     val currentPiece = board[pawnPosition]!!
 
-                    put(pawnPosition, ChessPieceButMore(piece = piece, isWhite = currentPiece.isWhite, hasBeenMoved = true))
+                    put(
+                        pawnPosition,
+                        ChessPieceButMore(
+                            piece = piece,
+                            isWhite = currentPiece.isWhite,
+                            hasBeenMoved = true,
+                            id = idCounter++
+                        )
+                    )
                 }
             }
         }

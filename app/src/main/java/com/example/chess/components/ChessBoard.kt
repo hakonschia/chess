@@ -1,8 +1,10 @@
 package com.example.chess.components
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.BoundsTransform
+import androidx.compose.animation.animateBounds
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -12,10 +14,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.LookaheadScope
 import com.example.chess.ChessPieceButMore
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -30,71 +37,112 @@ fun ChessBoard(
     BoxWithConstraints(
         modifier = modifier
     ) {
-        val boxSize = if (maxWidth > maxHeight) {
-            maxHeight / 8
-        } else {
-            maxWidth / 8
-        }
+        LookaheadScope {
+            val boxSize = if (maxWidth > maxHeight) {
+                maxHeight / 8
+            } else {
+                maxWidth / 8
+            }
 
-        Row {
-            for (i in 0 until 8) {
-                Column {
-                    for (j in 7 downTo 0) {
-                        val piecePosition = i to j
-                        val canMoveToPosition = selectedPiece?.second?.contains(piecePosition) == true
-
-                        val backgroundColor by animateColorAsState(
-                            if (selectedPiece?.first == piecePosition) {
-                                Color.Red.copy(alpha = 0.25f)
-                            } else if (canMoveToPosition) {
-                                Color.Green.copy(alpha = 0.25f)
-                            } else {
-                                if (i % 2 == 0) {
-                                    if (j % 2 == 0) {
-                                        Color.Gray
-                                    } else {
-                                        Color.White
+            // TODO this assumes that at startup pieces include all the pieces, which probably won't be correct
+            //  if pawns are promoted. Might be enough to just remember this by pieces.size
+            val pieceComposables = remember {
+                pieces.map { (_, piece) ->
+                    piece.id to movableContentOf {
+                        Text(
+                            text = piece.piece.name,
+                            color = if (piece.isWhite) Color.Red else Color.Blue,
+                            modifier = Modifier
+                                .animateBounds(
+                                    lookaheadScope = this@LookaheadScope,
+                                    boundsTransform = BoundsTransform { _, _ ->
+                                        tween(
+                                            durationMillis = 1000,
+                                        )
                                     }
+                                )
+                        )
+                    }
+                }.associate { it }
+            }
+
+            Row(
+                modifier = Modifier
+                    // The background for the entire board is drawn on this Row instead of on each piece
+                    // because the background causes clipping issues when animating the pieces across the board
+                    .drawBehind {
+                        for (i in 0 until 64) {
+                            val row = i % 8
+                            val column = i / 8
+
+                            val color = if (row % 2 == 0) {
+                                if (column % 2 == 0) {
+                                    Color.Gray
                                 } else {
-                                    if (j % 2 == 0) {
-                                        Color.White
-                                    } else {
-                                        Color.Gray
-                                    }
+                                    Color.White
+                                }
+                            } else {
+                                if (column % 2 == 0) {
+                                    Color.White
+                                } else {
+                                    Color.Gray
                                 }
                             }
-                        )
 
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .clickable {
-                                    if (canMoveToPosition) {
-                                        onMovePiece(selectedPiece.first, piecePosition)
-                                    } else {
-                                        onSelectPiece(piecePosition)
+                            drawRect(
+                                color = color,
+                                topLeft = Offset(
+                                    x = (boxSize * column).toPx(),
+                                    y = (boxSize * row).toPx()
+                                ),
+                                size = Size(boxSize.toPx(), boxSize.toPx())
+                            )
+                        }
+                    }
+            ) {
+                for (i in 0 until 8) {
+                    Column {
+                        for (j in 7 downTo 0) {
+                            val piecePosition = i to j
+                            val canMoveToPosition = selectedPiece?.second?.contains(piecePosition) == true
+
+                            val backgroundColor by animateColorAsState(
+                                if (selectedPiece?.first == piecePosition) {
+                                    Color.Red.copy(alpha = 0.25f)
+                                } else if (canMoveToPosition) {
+                                    Color.Green.copy(alpha = 0.25f)
+                                } else {
+                                    Color.Unspecified
+                                }
+                            )
+
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .clickable {
+                                        if (canMoveToPosition) {
+                                            onMovePiece(selectedPiece.first, piecePosition)
+                                        } else {
+                                            onSelectPiece(piecePosition)
+                                        }
                                     }
-                                }
-                                .size(boxSize)
-                                .drawBehind {
-                                    drawRect(backgroundColor)
-                                }
-                        ) {
-                            val piece = pieces.getOrDefault(piecePosition, null)
-
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
+                                    .drawBehind {
+                                        drawRect(backgroundColor)
+                                    }
+                                    .size(boxSize)
                             ) {
-                                if (piece != null) {
+                                val piece = pieces.getOrDefault(piecePosition, null)
+
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    pieceComposables[piece?.id]?.invoke()
+
                                     Text(
-                                        text = piece.piece.name
+                                        text = "${('A'.code + i).toChar()}${j + 1}",
+                                        color = Color.Black
                                     )
                                 }
-
-                                Text(
-                                    text = "${('A'.code + i).toChar()}$j",
-                                    color = Color.LightGray
-                                )
                             }
                         }
                     }
