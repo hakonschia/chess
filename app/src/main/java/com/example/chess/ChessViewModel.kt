@@ -58,8 +58,13 @@ class ChessViewModel : ViewModel() {
                         ChessPiece.Pawn -> {
                             if (
                                 lastMove != null &&
+                                // Last move was a pawn move
                                 currentPieces[lastMove.second]?.piece == ChessPiece.Pawn &&
+                                // The pawn we are moving changed the row
+                                from.first != to.first &&
+                                // The pawn we're moving moved to the same row as the previous pawn
                                 to.first == lastMove.second.first &&
+                                // The last move was a 2 square move
                                 abs(lastMove.second.second - lastMove.first.second) == 2
                             ) {
                                 // holy hell
