@@ -47,12 +47,22 @@ class MainActivity : ComponentActivity() {
                     ){
                         var isShowingForWhite by rememberSaveable { mutableStateOf(true) }
 
-                        Button(
-                            onClick = {
-                                isShowingForWhite = !isShowingForWhite
-                            }
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text("Change player perspective")
+                            Button(
+                                onClick = {
+                                    isShowingForWhite = !isShowingForWhite
+                                }
+                            ) {
+                                Text("Change player perspective")
+                            }
+
+                            Button(
+                                onClick = viewModel::reset
+                            ) {
+                                Text("Reset")
+                            }
                         }
 
                         Spacer(Modifier.size(24.dp))
