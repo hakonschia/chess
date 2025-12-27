@@ -41,6 +41,7 @@ class MainActivity : ComponentActivity() {
                         allPieces = viewModel.allPieces.collectAsStateWithLifecycle().value,
                         takenPieces = viewModel.takenPieces.collectAsStateWithLifecycle().value,
                         selectedPiece = viewModel.selectedPiece.collectAsStateWithLifecycle().value,
+                        moves = viewModel.moves.collectAsStateWithLifecycle().value,
                         onSelectPiece = viewModel::selectPiece,
                         onMovePiece = viewModel::movePiece,
                         isShowingForWhite = true,

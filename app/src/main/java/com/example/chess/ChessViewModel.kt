@@ -60,7 +60,8 @@ class ChessViewModel : ViewModel() {
     private val _selectedPiece = MutableStateFlow<Pair<Pair<Int, Int>, List<Pair<Int, Int>>>?>(null)
     val selectedPiece = _selectedPiece.asStateFlow()
 
-    private val moves = mutableListOf<Pair<Pair<Int, Int>, Pair<Int, Int>>>()
+    private val _moves = MutableStateFlow<List<Pair<Pair<Int, Int>, Pair<Int, Int>>>>(emptyList())
+    val moves = _moves.asStateFlow()
 
     private val _showPawnConversionDialog = MutableStateFlow<Pair<Int, Int>?>(null)
     val showPawnConversionDialog = _showPawnConversionDialog.asStateFlow()
@@ -72,7 +73,7 @@ class ChessViewModel : ViewModel() {
             _selectedPiece.value = position to getValidPositionsForPiece(
                 board = pieces.value,
                 position = position,
-                previousMove = moves.lastOrNull()
+                previousMove = moves.value.lastOrNull()
             )
         }
     }
@@ -89,7 +90,7 @@ class ChessViewModel : ViewModel() {
 
                     put(to, piece.copy(hasBeenMoved = true))
 
-                    val lastMove = moves.lastOrNull()
+                    val lastMove = moves.value.lastOrNull()
 
                     when (piece.piece) {
                         ChessPiece.Pawn -> {
@@ -133,7 +134,7 @@ class ChessViewModel : ViewModel() {
                         }
                     }
 
-                    moves.add(from to to)
+                    _moves.update { it + (from to to) }
                 }
             }
         }

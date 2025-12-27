@@ -43,6 +43,7 @@ fun ChessBoard(
     onSelectPiece: (Pair<Int, Int>) -> Unit,
     onMovePiece: (Pair<Int, Int>, Pair<Int, Int>) -> Unit,
     isShowingForWhite: Boolean,
+    moves: List<Pair<Pair<Int, Int>, Pair<Int, Int>>>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -77,6 +78,7 @@ fun ChessBoard(
                 } else {
                     maxWidth / 8
                 }
+                val lastMove = moves.lastOrNull()
 
                 Row(
                     modifier = Modifier
@@ -129,6 +131,10 @@ fun ChessBoard(
                                         Color.Red.copy(alpha = 0.25f)
                                     } else if (canMoveToPosition) {
                                         Color.Green.copy(alpha = 0.25f)
+                                    } else if (lastMove?.first == piecePosition) {
+                                        Color.Yellow.copy(alpha = 0.25f)
+                                    } else if (lastMove?.second == piecePosition) {
+                                        Color.Yellow.copy(alpha = 0.45f)
                                     } else {
                                         Color.Unspecified
                                     }
