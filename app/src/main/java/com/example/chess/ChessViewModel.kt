@@ -51,6 +51,9 @@ class ChessViewModel : ViewModel() {
     )
     val pieces = _pieces.asStateFlow()
 
+    private val _allPieces = MutableStateFlow(_pieces.value.values.toList().toList())
+    val allPieces = _allPieces.asStateFlow()
+
     private val _takenPieces = MutableStateFlow<List<ChessPieceButMore>>(emptyList())
     val takenPieces = _takenPieces.asStateFlow()
 
@@ -141,15 +144,17 @@ class ChessViewModel : ViewModel() {
             _pieces.update { board ->
                 board.toMutableMap().apply {
                     val currentPiece = board[pawnPosition]!!
+                    val newPiece = ChessPieceButMore(
+                        piece = piece,
+                        isWhite = currentPiece.isWhite,
+                        hasBeenMoved = true,
+                        id = idCounter++
+                    )
+                    _allPieces.update { it + newPiece }
 
                     put(
                         pawnPosition,
-                        ChessPieceButMore(
-                            piece = piece,
-                            isWhite = currentPiece.isWhite,
-                            hasBeenMoved = true,
-                            id = idCounter++
-                        )
+                        newPiece
                     )
                 }
             }

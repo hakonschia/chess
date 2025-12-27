@@ -36,6 +36,7 @@ import com.example.chess.asPainter
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun ChessBoard(
+    allPieces: List<ChessPieceButMore>,
     pieces: Map<Pair<Int, Int>, ChessPieceButMore>,
     takenPieces: List<ChessPieceButMore>,
     selectedPiece: Pair<Pair<Int, Int>, List<Pair<Int, Int>>>?,
@@ -49,10 +50,8 @@ fun ChessBoard(
             .verticalScroll(rememberScrollState())
     ) {
         LookaheadScope {
-            // TODO this assumes that at startup pieces include all the pieces, which probably won't be correct
-            //  if pawns are promoted. Might be enough to just remember this by pieces.size
-            val pieceComposables = remember {
-                pieces.map { (_, piece) ->
+            val pieceComposables = remember(allPieces) {
+                allPieces.map { piece ->
                     piece.id to movableContentOf {
                         Icon(
                             painter = piece.piece.asPainter(),
