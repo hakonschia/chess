@@ -80,8 +80,7 @@ class ChessViewModel : ViewModel() {
         _pieces.update { currentPieces ->
             currentPieces.toMutableMap().apply {
                 remove(from)?.let { piece ->
-                    val pieceAlreadyAtPosition = remove(to)
-                    if (pieceAlreadyAtPosition != null) {
+                    remove(to)?.let { pieceAlreadyAtPosition ->
                         _takenPieces.update { it + pieceAlreadyAtPosition }
                     }
 
@@ -98,7 +97,9 @@ class ChessViewModel : ViewModel() {
                                 abs(lastMove.second.second - lastMove.first.second) == 2
                             ) {
                                 // holy hell
-                                remove(lastMove.second)
+                                remove(lastMove.second)?.let { pieceAlreadyAtPosition ->
+                                    _takenPieces.update { it + pieceAlreadyAtPosition }
+                                }
                             } else {
                                 if (piece.isWhite) {
                                     if (to.second == 7) {
