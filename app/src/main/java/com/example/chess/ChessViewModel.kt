@@ -22,12 +22,12 @@ class ChessViewModel : ViewModel() {
             6 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false, id = idCounter++),
             7 to 1 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = true, hasBeenMoved = false, id = idCounter++),
             0 to 0 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = true, hasBeenMoved = false, id = idCounter++),
-            1 to 0 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            1 to 0 to ChessPieceButMore(piece = ChessPiece.Knight, isWhite = true, hasBeenMoved = false, id = idCounter++),
             2 to 0 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = true, hasBeenMoved = false, id = idCounter++),
             3 to 0 to ChessPieceButMore(piece = ChessPiece.Queen, isWhite = true, hasBeenMoved = false, id = idCounter++),
             4 to 0 to ChessPieceButMore(piece = ChessPiece.King, isWhite = true, hasBeenMoved = false, id = idCounter++),
             5 to 0 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = true, hasBeenMoved = false, id = idCounter++),
-            6 to 0 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = true, hasBeenMoved = false, id = idCounter++),
+            6 to 0 to ChessPieceButMore(piece = ChessPiece.Knight, isWhite = true, hasBeenMoved = false, id = idCounter++),
             7 to 0 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = true, hasBeenMoved = false, id = idCounter++),
 
             // Black
@@ -40,12 +40,12 @@ class ChessViewModel : ViewModel() {
             6 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false, id = idCounter++),
             7 to 6 to ChessPieceButMore(piece = ChessPiece.Pawn, isWhite = false, hasBeenMoved = false, id = idCounter++),
             0 to 7 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = false, hasBeenMoved = false, id = idCounter++),
-            1 to 7 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            1 to 7 to ChessPieceButMore(piece = ChessPiece.Knight, isWhite = false, hasBeenMoved = false, id = idCounter++),
             2 to 7 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = false, hasBeenMoved = false, id = idCounter++),
             3 to 7 to ChessPieceButMore(piece = ChessPiece.Queen, isWhite = false, hasBeenMoved = false, id = idCounter++),
             4 to 7 to ChessPieceButMore(piece = ChessPiece.King, isWhite = false, hasBeenMoved = false, id = idCounter++),
             5 to 7 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = false, hasBeenMoved = false, id = idCounter++),
-            6 to 7 to ChessPieceButMore(piece = ChessPiece.Horse, isWhite = false, hasBeenMoved = false, id = idCounter++),
+            6 to 7 to ChessPieceButMore(piece = ChessPiece.Knight, isWhite = false, hasBeenMoved = false, id = idCounter++),
             7 to 7 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = false, hasBeenMoved = false, id = idCounter++),
         )
     )
@@ -127,7 +127,7 @@ class ChessViewModel : ViewModel() {
                         }
 
                         ChessPiece.Queen,
-                        ChessPiece.Horse,
+                        ChessPiece.Knight,
                         ChessPiece.Bishop,
                         ChessPiece.Rook -> {
                             // No special moves
@@ -362,7 +362,7 @@ private fun getValidPositionsForPiece(
                 }
             }
 
-            ChessPiece.Horse -> {
+            ChessPiece.Knight -> {
                 addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second + 2)
                 addIfPositionIsEmptyOrTakenByEnemy(position.first + 1 to position.second - 2)
 

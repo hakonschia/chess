@@ -107,7 +107,7 @@ class MainActivity : ComponentActivity() {
                                     )
 
                                     PieceDialogButton(
-                                        piece = ChessPiece.Horse,
+                                        piece = ChessPiece.Knight,
                                         onClick = viewModel::onPawnDialogConfirm
                                     )
                                 }

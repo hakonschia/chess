@@ -8,7 +8,7 @@ enum class ChessPiece {
     Pawn,
     King,
     Queen,
-    Horse,
+    Knight,
     Bishop,
     Rook,
 }
@@ -20,7 +20,7 @@ fun ChessPiece.asPainter(): Painter {
             ChessPiece.Pawn -> R.drawable.pawn
             ChessPiece.King -> R.drawable.king
             ChessPiece.Queen -> R.drawable.queen
-            ChessPiece.Horse -> R.drawable.knight
+            ChessPiece.Knight -> R.drawable.knight
             ChessPiece.Bishop -> R.drawable.bishop
             ChessPiece.Rook -> R.drawable.rook
         }
