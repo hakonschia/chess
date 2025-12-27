@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
 
                     ChessBoard(
                         pieces = viewModel.pieces.collectAsStateWithLifecycle().value,
+                        takenPieces = viewModel.takenPieces.collectAsStateWithLifecycle().value,
                         selectedPiece = viewModel.selectedPiece.collectAsStateWithLifecycle().value,
                         onSelectPiece = viewModel::selectPiece,
                         onMovePiece = viewModel::movePiece,

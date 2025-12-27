@@ -51,6 +51,9 @@ class ChessViewModel : ViewModel() {
     )
     val pieces = _pieces.asStateFlow()
 
+    private val _takenPieces = MutableStateFlow<List<ChessPieceButMore>>(emptyList())
+    val takenPieces = _takenPieces.asStateFlow()
+
     private val _selectedPiece = MutableStateFlow<Pair<Pair<Int, Int>, List<Pair<Int, Int>>>?>(null)
     val selectedPiece = _selectedPiece.asStateFlow()
 
@@ -77,6 +80,11 @@ class ChessViewModel : ViewModel() {
         _pieces.update { currentPieces ->
             currentPieces.toMutableMap().apply {
                 remove(from)?.let { piece ->
+                    val pieceAlreadyAtPosition = remove(to)
+                    if (pieceAlreadyAtPosition != null) {
+                        _takenPieces.update { it + pieceAlreadyAtPosition }
+                    }
+
                     put(to, piece.copy(hasBeenMoved = true))
 
                     val lastMove = moves.lastOrNull()
