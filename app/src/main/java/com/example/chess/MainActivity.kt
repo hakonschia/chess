@@ -41,6 +41,7 @@ class MainActivity : ComponentActivity() {
                         selectedPiece = viewModel.selectedPiece.collectAsStateWithLifecycle().value,
                         onSelectPiece = viewModel::selectPiece,
                         onMovePiece = viewModel::movePiece,
+                        isShowingForWhite = true,
                         modifier = Modifier
                             .background(Color.Black)
                             .padding(innerPadding)

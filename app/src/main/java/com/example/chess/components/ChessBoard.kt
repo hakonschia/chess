@@ -32,6 +32,7 @@ fun ChessBoard(
     selectedPiece: Pair<Pair<Int, Int>, List<Pair<Int, Int>>>?,
     onSelectPiece: (Pair<Int, Int>) -> Unit,
     onMovePiece: (Pair<Int, Int>, Pair<Int, Int>) -> Unit,
+    isShowingForWhite: Boolean,
     modifier: Modifier = Modifier
 ) {
     BoxWithConstraints(
@@ -102,7 +103,13 @@ fun ChessBoard(
             ) {
                 for (i in 0 until 8) {
                     Column {
-                        for (j in 7 downTo 0) {
+                        val range = if (isShowingForWhite) {
+                            7 downTo 0
+                        } else {
+                            0 until 8
+                        }
+
+                        for (j in range) {
                             val piecePosition = i to j
                             val canMoveToPosition = selectedPiece?.second?.contains(piecePosition) == true
 
