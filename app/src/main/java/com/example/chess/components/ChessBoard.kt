@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.unit.dp
 import com.example.chess.ChessPieceButMore
+import com.example.chess.asPainter
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -47,9 +49,10 @@ fun ChessBoard(
             val pieceComposables = remember {
                 pieces.map { (_, piece) ->
                     piece.id to movableContentOf {
-                        Text(
-                            text = piece.piece.name,
-                            color = if (piece.isWhite) Color.Red else Color.Blue,
+                        Icon(
+                            painter = piece.piece.asPainter(),
+                            contentDescription = piece.piece.name,
+                            tint = if (piece.isWhite) Color.LightGray else Color.DarkGray,
                             modifier = Modifier
                                 .animateBounds(
                                     lookaheadScope = this@LookaheadScope,
