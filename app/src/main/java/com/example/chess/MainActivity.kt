@@ -40,12 +40,12 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val viewModel = viewModel<ChessViewModel>()
                     val showPawnDialog by viewModel.showPawnConversionDialog.collectAsStateWithLifecycle()
-                    val isMate by viewModel.isMate.collectAsStateWithLifecycle()
+                    val gameState by viewModel.gameState.collectAsStateWithLifecycle()
 
                     Column(
                         modifier = Modifier
                             .padding(innerPadding)
-                    ){
+                    ) {
                         var isShowingForWhite by rememberSaveable { mutableStateOf(true) }
 
                         Row(
@@ -126,11 +126,29 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    if (isMate) {
-                        Dialog(
-                            onDismissRequest = viewModel::reset
-                        ) {
-                            Text("It's a mate!")
+                    when (val gameState = gameState) {
+                        is GameState.Mate -> {
+                            Dialog(
+                                onDismissRequest = viewModel::reset
+                            ) {
+                                if (gameState.whiteWon) {
+                                    Text("White wins!")
+                                } else {
+                                    Text("Black wins!")
+                                }
+                            }
+                        }
+
+                        is GameState.Playing -> {
+
+                        }
+
+                        is GameState.Stalemate -> {
+                            Dialog(
+                                onDismissRequest = viewModel::reset
+                            ) {
+                                Text("It's a stalemate!")
+                            }
                         }
                     }
                 }

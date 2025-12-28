@@ -4,7 +4,17 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlin.collections.component1
+import kotlin.collections.component2
 import kotlin.math.abs
+
+sealed interface GameState {
+    data object Playing : GameState
+
+    data class Mate(val whiteWon: Boolean) : GameState
+
+    data object Stalemate : GameState
+}
 
 class ChessViewModel : ViewModel() {
 
@@ -28,8 +38,8 @@ class ChessViewModel : ViewModel() {
     private val _showPawnConversionDialog = MutableStateFlow<Pair<Int, Int>?>(null)
     val showPawnConversionDialog = _showPawnConversionDialog.asStateFlow()
 
-    private val _isMate = MutableStateFlow(false)
-    val isMate = _isMate.asStateFlow()
+    private val _gameState = MutableStateFlow<GameState>(GameState.Playing)
+    val gameState = _gameState.asStateFlow()
 
     fun selectPiece(position: Pair<Int, Int>) {
         if (_selectedPiece.value?.first == position) {
@@ -116,17 +126,12 @@ class ChessViewModel : ViewModel() {
             }
         }
 
-        _isMate.value = _pieces.value
-            .filter { it.value.piece == ChessPiece.King }
-            .any { (position, king) ->
-                val validPositions = getValidPositionsForPiece(
-                    board = _pieces.value,
-                    position = position,
-                    previousMove = null
-                )
-
-                validPositions.isEmpty() && isKingInCheck(board = pieces.value, white = king.isWhite)
-            }
+        if (isMate(board = pieces.value, white = true)) {
+            _gameState.value = GameState.Mate(whiteWon = false)
+        } else if (isMate(board = pieces.value, white = false)) {
+            _gameState.value = GameState.Mate(whiteWon = true)
+        }
+        // TODO find out if it's a stalemate
     }
 
     fun onPawnDialogConfirm(piece: ChessPiece) {
@@ -158,7 +163,7 @@ class ChessViewModel : ViewModel() {
         _takenPieces.value = emptyList()
         _selectedPiece.value = null
         _moves.value = emptyList()
-        _isMate.value = false
+        _gameState.value = GameState.Playing
     }
 
     private fun generateStartBoard(): Map<Pair<Int, Int>, ChessPieceButMore> {
@@ -473,4 +478,39 @@ private fun isKingInCheck(board: Map<Pair<Int, Int>, ChessPieceButMore>, white: 
     val positionOfKing = board.filter { it.value.piece == ChessPiece.King && it.value.isWhite == white }.keys.single()
 
     return allMovesForOtherPlayer.contains(positionOfKing)
+}
+
+/**
+ * Checks if [white] is in a mate (ie. if [white] is true and this function returns true that means black won)
+ */
+private fun isMate(board: Map<Pair<Int, Int>, ChessPieceButMore>, white: Boolean): Boolean {
+    // To check if white is in a mate we:
+    // - Find every white piece
+    //  - Find all movements that white piece can make
+    //   - Check if all those move put the king in check
+    // If all pieces match this then white is in a mate
+
+    return board
+        .filter { it.value.isWhite == white }
+        .all { (currentPosition, _) ->
+            val validPositionsForPiece = getValidPositionsForPiece(
+                board = board,
+                position = currentPosition,
+                previousMove = null
+            )
+
+            // All moves result in a check
+            validPositionsForPiece.all { validPosition ->
+                val newBoard = board.toMutableMap().apply {
+                    remove(currentPosition)?.let { piece ->
+                        put(validPosition, piece)
+                    }
+                }
+
+                isKingInCheck(
+                    board = newBoard,
+                    white = white
+                )
+            }
+        }
 }
