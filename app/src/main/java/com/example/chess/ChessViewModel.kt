@@ -35,10 +35,17 @@ class ChessViewModel : ViewModel() {
         if (_selectedPiece.value?.first == position) {
             _selectedPiece.value = null
         } else {
+            val piece = _pieces.value[position] ?: return
+
+            // Gotta wait for your turn mate
+            if ((piece.isWhite && moves.value.size % 2 == 1) || (!piece.isWhite && moves.value.size % 2 == 0)) {
+                return
+            }
+
             _selectedPiece.value = position to getValidPositionsForPiece(
                 board = pieces.value,
                 position = position,
-                previousMoves = moves.value
+                previousMove = moves.value.lastOrNull()
             )
         }
     }
@@ -115,7 +122,7 @@ class ChessViewModel : ViewModel() {
                 val validPositions = getValidPositionsForPiece(
                     board = _pieces.value,
                     position = position,
-                    previousMoves = moves.value
+                    previousMove = null
                 )
 
                 validPositions.isEmpty() && isKingInCheck(board = pieces.value, white = king.isWhite)
@@ -193,22 +200,20 @@ class ChessViewModel : ViewModel() {
             5 to 7 to ChessPieceButMore(piece = ChessPiece.Bishop, isWhite = false, hasBeenMoved = false, id = idCounter++),
             6 to 7 to ChessPieceButMore(piece = ChessPiece.Knight, isWhite = false, hasBeenMoved = false, id = idCounter++),
             7 to 7 to ChessPieceButMore(piece = ChessPiece.Rook, isWhite = false, hasBeenMoved = false, id = idCounter++),
-            )
+        )
     }
 }
 
+/**
+ * @param previousMove The previous move that was made, this is used to generate en passant moves and can be set to null if you
+ * don't care about en passant
+ */
 private fun getValidPositionsForPiece(
     board: Map<Pair<Int, Int>, ChessPieceButMore>,
     position: Pair<Int, Int>,
-    previousMoves: List<Pair<Pair<Int, Int>, Pair<Int, Int>>?>
+    previousMove: Pair<Pair<Int, Int>, Pair<Int, Int>>?
 ): List<Pair<Int, Int>> {
     val piece = board[position] ?: return emptyList()
-    val previousMove = previousMoves.lastOrNull()
-
-    // Gotta wait for your turn mate
-    if ((piece.isWhite && previousMoves.size % 2 == 1) || (!piece.isWhite && previousMoves.size % 2 == 0)) {
-        return emptyList()
-    }
 
     fun isPositionEmpty(position: Pair<Int, Int>): Boolean {
         return !board.containsKey(position)
@@ -458,7 +463,11 @@ private fun isKingInCheck(board: Map<Pair<Int, Int>, ChessPieceButMore>, white: 
         .filter { it.value.isWhite != white }
         .filter { it.value.piece != ChessPiece.King }
         .flatMap { piece ->
-            getValidPositionsForPiece(board, piece.key, emptyList())
+            getValidPositionsForPiece(
+                board = board,
+                position = piece.key,
+                previousMove = null
+            )
         }
 
     val positionOfKing = board.filter { it.value.piece == ChessPiece.King && it.value.isWhite == white }.keys.single()
