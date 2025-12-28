@@ -216,7 +216,8 @@ class ChessViewModel : ViewModel() {
 private fun getValidPositionsForPiece(
     board: Map<Pair<Int, Int>, ChessPieceButMore>,
     position: Pair<Int, Int>,
-    previousMove: Pair<Pair<Int, Int>, Pair<Int, Int>>?
+    previousMove: Pair<Pair<Int, Int>, Pair<Int, Int>>?,
+    filterKingMoves: Boolean = true
 ): List<Pair<Int, Int>> {
     val piece = board[position] ?: return emptyList()
 
@@ -369,18 +370,6 @@ private fun getValidPositionsForPiece(
                         }
                     }
                 }
-
-                // The king isn't allowed to put itself in check, if one of the positions would return in a check
-                // then it needs to be removed
-                removeAll { move ->
-                    val boardAfterMove = board.toMutableMap().apply {
-                        remove(position)?.let { piece ->
-                            put(move, piece)
-                        }
-                    }
-
-                    isKingInCheck(board = boardAfterMove, white = piece.isWhite)
-                }
             }
 
             ChessPiece.Queen -> {
@@ -455,9 +444,28 @@ private fun getValidPositionsForPiece(
                 }
             }
         }
-    }.filter {
+
         // We don't bother checking above if the positions are outside the board, but they should be removed here
-        it.first in 0..7 && it.second in 0..7
+        removeAll { move ->
+            move.first !in 0..7 || move.second !in 0..7
+        }
+
+        // We are not allowed to put the king in check. If one of the positions would result in a check then it
+        // needs to be removed
+        if (filterKingMoves) {
+            removeAll { move ->
+                val boardAfterMove = board.toMutableMap().apply {
+                    remove(position)?.let { piece ->
+                        put(move, piece.copy(hasBeenMoved = true))
+                    }
+                }
+
+                isKingInCheck(
+                    board = boardAfterMove,
+                    white = piece.isWhite
+                )
+            }
+        }
     }
 }
 
@@ -466,12 +474,15 @@ private fun isKingInCheck(board: Map<Pair<Int, Int>, ChessPieceButMore>, white: 
     // those positions
     val allMovesForOtherPlayer = board
         .filter { it.value.isWhite != white }
-        .filter { it.value.piece != ChessPiece.King }
         .flatMap { piece ->
             getValidPositionsForPiece(
                 board = board,
                 position = piece.key,
-                previousMove = null
+                previousMove = null,
+                // If we filter out king moves here it will result in an infinite loop
+                // I imagine this is because I'm doing something weird and it's probably a more proper way of avoiding it
+                // but this works so why not just do this
+                filterKingMoves = false
             )
         }
 
