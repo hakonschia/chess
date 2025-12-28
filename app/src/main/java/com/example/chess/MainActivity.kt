@@ -40,6 +40,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val viewModel = viewModel<ChessViewModel>()
                     val showPawnDialog by viewModel.showPawnConversionDialog.collectAsStateWithLifecycle()
+                    val isMate by viewModel.isMate.collectAsStateWithLifecycle()
 
                     Column(
                         modifier = Modifier
@@ -122,6 +123,14 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             }
+                        }
+                    }
+
+                    if (isMate) {
+                        Dialog(
+                            onDismissRequest = viewModel::reset
+                        ) {
+                            Text("It's a mate!")
                         }
                     }
                 }

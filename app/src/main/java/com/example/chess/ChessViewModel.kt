@@ -28,6 +28,9 @@ class ChessViewModel : ViewModel() {
     private val _showPawnConversionDialog = MutableStateFlow<Pair<Int, Int>?>(null)
     val showPawnConversionDialog = _showPawnConversionDialog.asStateFlow()
 
+    private val _isMate = MutableStateFlow(false)
+    val isMate = _isMate.asStateFlow()
+
     fun selectPiece(position: Pair<Int, Int>) {
         if (_selectedPiece.value?.first == position) {
             _selectedPiece.value = null
@@ -105,6 +108,18 @@ class ChessViewModel : ViewModel() {
                 }
             }
         }
+
+        _isMate.value = _pieces.value
+            .filter { it.value.piece == ChessPiece.King }
+            .any { (position, king) ->
+                val validPositions = getValidPositionsForPiece(
+                    board = _pieces.value,
+                    position = position,
+                    previousMoves = moves.value
+                )
+
+                validPositions.isEmpty() && isKingInCheck(board = pieces.value, white = king.isWhite)
+            }
     }
 
     fun onPawnDialogConfirm(piece: ChessPiece) {
@@ -136,6 +151,7 @@ class ChessViewModel : ViewModel() {
         _takenPieces.value = emptyList()
         _selectedPiece.value = null
         _moves.value = emptyList()
+        _isMate.value = false
     }
 
     private fun generateStartBoard(): Map<Pair<Int, Int>, ChessPieceButMore> {
@@ -344,7 +360,7 @@ private fun getValidPositionsForPiece(
                     }
                 }
 
-                // The king isn't allowed to put itself in a mate, if one of the positions would return in a mate
+                // The king isn't allowed to put itself in check, if one of the positions would return in a check
                 // then it needs to be removed
                 removeAll { move ->
                     val boardAfterMove = board.toMutableMap().apply {
@@ -353,7 +369,7 @@ private fun getValidPositionsForPiece(
                         }
                     }
 
-                    isMate(board = boardAfterMove, white = piece.isWhite)
+                    isKingInCheck(board = boardAfterMove, white = piece.isWhite)
                 }
             }
 
@@ -429,11 +445,14 @@ private fun getValidPositionsForPiece(
                 }
             }
         }
+    }.filter {
+        // We don't bother checking above if the positions are outside the board, but they should be removed here
+        it.first in 0..7 && it.second in 0..7
     }
 }
 
-private fun isMate(board: Map<Pair<Int, Int>, ChessPieceButMore>, white: Boolean): Boolean {
-    // To check if white is in a mate we just get all the valid positions for black and check if the king is in one of
+private fun isKingInCheck(board: Map<Pair<Int, Int>, ChessPieceButMore>, white: Boolean): Boolean {
+    // To check if white is in a check we just get all the valid positions for black and check if the king is in one of
     // those positions
     val allMovesForOtherPlayer = board
         .filter { it.value.isWhite != white }
