@@ -319,8 +319,8 @@ private fun getValidPositionsForPiece(
                 // Castling moves
                 if (!piece.hasBeenMoved) {
                     if (piece.isWhite) {
-                        val rightTower = board[7 to 0]?.takeIf { !it.hasBeenMoved && it.piece == ChessPiece.Rook }
-                        val leftTower = board[0 to 0]?.takeIf { !it.hasBeenMoved && it.piece == ChessPiece.Rook }
+                        val rightTower = board[7 to 0]?.takeIf { it.piece == ChessPiece.Rook }
+                        val leftTower = board[0 to 0]?.takeIf { it.piece == ChessPiece.Rook }
 
                         if (
                             isPositionEmpty(5 to 0) &&
@@ -339,8 +339,8 @@ private fun getValidPositionsForPiece(
                             add(2 to 0)
                         }
                     } else {
-                        val rightTower = board[7 to 7]?.takeIf { !it.hasBeenMoved && it.piece == ChessPiece.Rook }
-                        val leftTower = board[0 to 7]?.takeIf { !it.hasBeenMoved && it.piece == ChessPiece.Rook }
+                        val rightTower = board[7 to 7]?.takeIf { it.piece == ChessPiece.Rook }
+                        val leftTower = board[0 to 7]?.takeIf { it.piece == ChessPiece.Rook }
 
                         if (
                             isPositionEmpty(5 to 7) &&
