@@ -41,6 +41,7 @@ class MainActivity : ComponentActivity() {
                     val viewModel = viewModel<ChessViewModel>()
                     val showPawnDialog by viewModel.showPawnConversionDialog.collectAsStateWithLifecycle()
                     val gameState by viewModel.gameState.collectAsStateWithLifecycle()
+                    val moves by viewModel.moves.collectAsStateWithLifecycle()
 
                     Column(
                         modifier = Modifier
@@ -68,12 +69,22 @@ class MainActivity : ComponentActivity() {
 
                         Spacer(Modifier.size(24.dp))
 
+                        Text(
+                            text = if (moves.size % 2 == 0) {
+                                "White's turn"
+                            } else {
+                                "Black's turn"
+                            }
+                        )
+
+                        Spacer(Modifier.size(24.dp))
+
                         ChessBoard(
                             pieces = viewModel.pieces.collectAsStateWithLifecycle().value,
                             allPieces = viewModel.allPieces.collectAsStateWithLifecycle().value,
                             takenPieces = viewModel.takenPieces.collectAsStateWithLifecycle().value,
                             selectedPiece = viewModel.selectedPiece.collectAsStateWithLifecycle().value,
-                            moves = viewModel.moves.collectAsStateWithLifecycle().value,
+                            moves = moves,
                             onSelectPiece = viewModel::selectPiece,
                             onMovePiece = viewModel::movePiece,
                             isShowingForWhite = isShowingForWhite,
