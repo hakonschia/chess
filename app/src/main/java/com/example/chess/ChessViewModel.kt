@@ -35,7 +35,7 @@ class ChessViewModel : ViewModel() {
             _selectedPiece.value = position to getValidPositionsForPiece(
                 board = pieces.value,
                 position = position,
-                previousMove = moves.value.lastOrNull()
+                previousMoves = moves.value
             )
         }
     }
@@ -184,9 +184,15 @@ class ChessViewModel : ViewModel() {
 private fun getValidPositionsForPiece(
     board: Map<Pair<Int, Int>, ChessPieceButMore>,
     position: Pair<Int, Int>,
-    previousMove: Pair<Pair<Int, Int>, Pair<Int, Int>>?
+    previousMoves: List<Pair<Pair<Int, Int>, Pair<Int, Int>>?>
 ): List<Pair<Int, Int>> {
     val piece = board[position] ?: return emptyList()
+    val previousMove = previousMoves.lastOrNull()
+
+    // Gotta wait for your turn mate
+    if ((piece.isWhite && previousMoves.size % 2 == 1) || (!piece.isWhite && previousMoves.size % 2 == 0)) {
+        return emptyList()
+    }
 
     fun isPositionEmpty(position: Pair<Int, Int>): Boolean {
         return !board.containsKey(position)
@@ -433,7 +439,7 @@ private fun isMate(board: Map<Pair<Int, Int>, ChessPieceButMore>, white: Boolean
         .filter { it.value.isWhite != white }
         .filter { it.value.piece != ChessPiece.King }
         .flatMap { piece ->
-            getValidPositionsForPiece(board, piece.key, null)
+            getValidPositionsForPiece(board, piece.key, emptyList())
         }
 
     val positionOfKing = board.filter { it.value.piece == ChessPiece.King && it.value.isWhite == white }.keys.single()
