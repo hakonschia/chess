@@ -63,7 +63,7 @@ fun ChessBoard(
                                     lookaheadScope = this@LookaheadScope,
                                     boundsTransform = BoundsTransform { _, _ ->
                                         tween(
-                                            durationMillis = 1000,
+                                            durationMillis = 500
                                         )
                                     }
                                 )
