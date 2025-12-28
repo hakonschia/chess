@@ -126,12 +126,13 @@ class ChessViewModel : ViewModel() {
             }
         }
 
-        if (isMate(board = pieces.value, white = true)) {
+        if (isStalemate(board = pieces.value, whiteToPlay = moves.value.size % 2 == 0)) {
+            _gameState.value = GameState.Stalemate
+        } else if (isMate(board = pieces.value, white = true)) {
             _gameState.value = GameState.Mate(whiteWon = false)
         } else if (isMate(board = pieces.value, white = false)) {
             _gameState.value = GameState.Mate(whiteWon = true)
         }
-        // TODO find out if it's a stalemate
     }
 
     fun onPawnDialogConfirm(piece: ChessPiece) {
@@ -524,4 +525,19 @@ private fun isMate(board: Map<Pair<Int, Int>, ChessPieceButMore>, white: Boolean
                 )
             }
         }
+}
+
+private fun isStalemate(
+    board: Map<Pair<Int, Int>, ChessPieceButMore>,
+    whiteToPlay: Boolean
+): Boolean {
+    return board
+        .filter { it.value.isWhite == whiteToPlay }
+        .all { (position, _) ->
+            getValidPositionsForPiece(
+                board = board,
+                position = position,
+                previousMove = null
+            ).isEmpty()
+        } && !isMate(board = board, white = whiteToPlay)
 }
