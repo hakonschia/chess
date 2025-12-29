@@ -226,6 +226,17 @@ private fun getValidPositionsForPiece(
         return !board.containsKey(position)
     }
 
+    fun isPositionEmptyAndEnemyCannotMoveToPosition(position: Pair<Int, Int>): Boolean {
+        return !board.containsKey(position) && !canEnemyMoveToPosition(
+            board = board,
+            position = position,
+            isEnemyWhite = !piece.isWhite,
+            // Need to filter out the current piece to avoid an infinite loop (at the very least this works for checking
+            // for king castle moves, which is the only place we call this function now)
+            filterPiece = piece.piece
+        )
+    }
+
     fun isPositionTakenByEnemy(position: Pair<Int, Int>): Boolean {
         val pieceAtPosition = board[position] ?: return false
 
@@ -335,18 +346,20 @@ private fun getValidPositionsForPiece(
                         val leftTower = board[0 to 0]?.takeIf { it.piece == ChessPiece.Rook }
 
                         if (
-                            isPositionEmpty(5 to 0) &&
-                            isPositionEmpty(6 to 0) &&
-                            rightTower?.hasBeenMoved == false
+                            rightTower?.hasBeenMoved == false &&
+                            // You're only allowed to castle if the places between the king and the rook are empty and not
+                            // no enemy pieces are able to move there
+                            isPositionEmptyAndEnemyCannotMoveToPosition(5 to 0) &&
+                            isPositionEmptyAndEnemyCannotMoveToPosition(6 to 0)
                         ) {
                             add(6 to 0)
                         }
 
                         if (
-                            isPositionEmpty(1 to 0) &&
-                            isPositionEmpty(2 to 0) &&
-                            isPositionEmpty(3 to 0) &&
-                            leftTower?.hasBeenMoved == false
+                            leftTower?.hasBeenMoved == false &&
+                            isPositionEmptyAndEnemyCannotMoveToPosition(1 to 0) &&
+                            isPositionEmptyAndEnemyCannotMoveToPosition(2 to 0) &&
+                            isPositionEmptyAndEnemyCannotMoveToPosition(3 to 0)
                         ) {
                             add(2 to 0)
                         }
@@ -355,17 +368,17 @@ private fun getValidPositionsForPiece(
                         val leftTower = board[0 to 7]?.takeIf { it.piece == ChessPiece.Rook }
 
                         if (
-                            isPositionEmpty(5 to 7) &&
-                            isPositionEmpty(6 to 7) &&
-                            rightTower?.hasBeenMoved == false
+                            rightTower?.hasBeenMoved == false &&
+                            isPositionEmptyAndEnemyCannotMoveToPosition(5 to 7) &&
+                            isPositionEmptyAndEnemyCannotMoveToPosition(6 to 7)
                         ) {
                             add(6 to 7)
                         }
                         if (
-                            isPositionEmpty(1 to 7) &&
-                            isPositionEmpty(2 to 7) &&
-                            isPositionEmpty(3 to 7) &&
-                            leftTower?.hasBeenMoved == false
+                            leftTower?.hasBeenMoved == false &&
+                            isPositionEmptyAndEnemyCannotMoveToPosition(1 to 7) &&
+                            isPositionEmptyAndEnemyCannotMoveToPosition(2 to 7) &&
+                            isPositionEmptyAndEnemyCannotMoveToPosition(3 to 7)
                         ) {
                             add(2 to 7)
                         }
@@ -540,4 +553,23 @@ private fun isStalemate(
                 previousMove = null
             ).isEmpty()
         } && !isMate(board = board, white = whiteToPlay)
+}
+
+private fun canEnemyMoveToPosition(
+    board: Map<Pair<Int, Int>, ChessPieceButMore>,
+    position: Pair<Int, Int>,
+    isEnemyWhite: Boolean,
+    filterPiece: ChessPiece
+): Boolean {
+    return board
+        .filter { it.value.isWhite == isEnemyWhite }
+        .filter { it.value.piece != filterPiece}
+        .any { (piecePosition, _) ->
+            getValidPositionsForPiece(
+                board = board,
+                position = piecePosition,
+                previousMove = null,
+                filterKingMoves = false
+            ).contains(position)
+        }
 }
