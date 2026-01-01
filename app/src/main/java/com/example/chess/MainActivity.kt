@@ -89,7 +89,6 @@ class MainActivity : ComponentActivity() {
                             onMovePiece = viewModel::movePiece,
                             isShowingForWhite = isShowingForWhite,
                             modifier = Modifier
-                                .background(Color.Black)
                                 .fillMaxSize()
                         )
                     }
