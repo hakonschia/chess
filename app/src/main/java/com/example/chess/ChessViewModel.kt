@@ -108,11 +108,11 @@ class ChessViewModel : ViewModel() {
                         }
 
                         ChessPiece.King -> {
-                            // We are castling, need to manually move the tower
+                            // We are castling, need to manually move the rook
                             if (to.first - from.first == 2) {
-                                put(5 to from.second, remove(7 to from.second)!!)
+                                put(5 to from.second, remove(7 to from.second)!!.copy(hasBeenMoved = true))
                             } else if (from.first - to.first == 2) {
-                                put(3 to from.second, remove(0 to from.second)!!)
+                                put(3 to from.second, remove(0 to from.second)!!.copy(hasBeenMoved = true))
                             }
                         }
 
@@ -349,11 +349,11 @@ private fun getValidPositionsForPiece(
                 // Castling moves
                 if (!piece.hasBeenMoved) {
                     if (piece.isWhite) {
-                        val rightTower = board[7 to 0]?.takeIf { it.piece == ChessPiece.Rook }
-                        val leftTower = board[0 to 0]?.takeIf { it.piece == ChessPiece.Rook }
+                        val rightRook = board[7 to 0]?.takeIf { it.piece == ChessPiece.Rook }
+                        val leftRook = board[0 to 0]?.takeIf { it.piece == ChessPiece.Rook }
 
                         if (
-                            rightTower?.hasBeenMoved == false &&
+                            rightRook?.hasBeenMoved == false &&
                             // You're only allowed to castle if the places between the king and the rook are empty and not
                             // no enemy pieces are able to move there
                             isPositionEmptyAndEnemyCannotMoveToPosition(5 to 0) &&
@@ -363,7 +363,7 @@ private fun getValidPositionsForPiece(
                         }
 
                         if (
-                            leftTower?.hasBeenMoved == false &&
+                            leftRook?.hasBeenMoved == false &&
                             isPositionEmptyAndEnemyCannotMoveToPosition(1 to 0) &&
                             isPositionEmptyAndEnemyCannotMoveToPosition(2 to 0) &&
                             isPositionEmptyAndEnemyCannotMoveToPosition(3 to 0)
@@ -371,18 +371,18 @@ private fun getValidPositionsForPiece(
                             add(2 to 0)
                         }
                     } else {
-                        val rightTower = board[7 to 7]?.takeIf { it.piece == ChessPiece.Rook }
-                        val leftTower = board[0 to 7]?.takeIf { it.piece == ChessPiece.Rook }
+                        val rightRook = board[7 to 7]?.takeIf { it.piece == ChessPiece.Rook }
+                        val leftRook = board[0 to 7]?.takeIf { it.piece == ChessPiece.Rook }
 
                         if (
-                            rightTower?.hasBeenMoved == false &&
+                            rightRook?.hasBeenMoved == false &&
                             isPositionEmptyAndEnemyCannotMoveToPosition(5 to 7) &&
                             isPositionEmptyAndEnemyCannotMoveToPosition(6 to 7)
                         ) {
                             add(6 to 7)
                         }
                         if (
-                            leftTower?.hasBeenMoved == false &&
+                            leftRook?.hasBeenMoved == false &&
                             isPositionEmptyAndEnemyCannotMoveToPosition(1 to 7) &&
                             isPositionEmptyAndEnemyCannotMoveToPosition(2 to 7) &&
                             isPositionEmptyAndEnemyCannotMoveToPosition(3 to 7)
