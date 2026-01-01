@@ -286,6 +286,8 @@ private fun getValidPositionsForPiece(
     return buildList {
         when (piece.piece) {
             ChessPiece.Pawn -> {
+                val pieceAtPreviousMove = board[previousMove?.second]
+
                 if (piece.isWhite) {
                     if (isPositionEmpty(position.first to position.second + 1)) {
                         addIfPositionIsEmpty(position.first to position.second + 1)
@@ -302,6 +304,7 @@ private fun getValidPositionsForPiece(
                     // en passant
                     if (
                         previousMove != null &&
+                        pieceAtPreviousMove?.piece == ChessPiece.Pawn &&
                         previousMove.first.second - previousMove.second.second == 2 &&
                         previousMove.second.second == position.second
                     ) {
@@ -324,6 +327,7 @@ private fun getValidPositionsForPiece(
                     // en passant
                     if (
                         previousMove != null &&
+                        pieceAtPreviousMove?.piece == ChessPiece.Pawn &&
                         previousMove.second.second - previousMove.first.second == 2 &&
                         previousMove.second.second == position.second
                     ) {
@@ -503,7 +507,8 @@ private fun isKingInCheck(board: Map<Pair<Int, Int>, ChessPieceButMore>, white: 
             )
         }
 
-    val positionOfKing = board.filter { it.value.piece == ChessPiece.King && it.value.isWhite == white }.keys.single()
+    val positionOfKing =
+        board.filter { it.value.piece == ChessPiece.King && it.value.isWhite == white }.keys.single()
 
     return allMovesForOtherPlayer.contains(positionOfKing)
 }
@@ -566,7 +571,7 @@ private fun canEnemyMoveToPosition(
 ): Boolean {
     return board
         .filter { it.value.isWhite == isEnemyWhite }
-        .filter { it.value.piece != filterPiece}
+        .filter { it.value.piece != filterPiece }
         .any { (piecePosition, _) ->
             getValidPositionsForPiece(
                 board = board,
