@@ -78,6 +78,9 @@ class ChessViewModel : ViewModel() {
                         ChessPiece.Pawn -> {
                             if (
                                 lastMove != null &&
+                                // We're not moving to the position of the last move
+                                // (ie. we didn't outright take the piece)
+                                lastMove.second != to &&
                                 // Last move was a pawn move
                                 currentPieces[lastMove.second]?.piece == ChessPiece.Pawn &&
                                 // The pawn we are moving changed the row
